@@ -34,6 +34,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .admin-only { display: none !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col md:flex-row">
@@ -76,13 +77,15 @@
         </div>
 
         <div class="space-y-2">
-            <button onclick="openRegisterModal()" class="w-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 font-medium py-2 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2">
+            <!-- 관리자 모드에서만 보이는 새 프로젝트 등록 버튼 -->
+            <button id="registerBtn" onclick="openRegisterModal()" class="w-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 font-medium py-2 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 admin-only">
                 <i class="fa-solid fa-plus text-emerald-500"></i> 새 프로젝트 등록
             </button>
             <button onclick="openContactModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm transition shadow-sm flex items-center justify-center gap-2">
                 <i class="fa-regular fa-paper-plane"></i> 연락 및 협업 제안
             </button>
-            <p class="text-[10px] text-center text-gray-400 mt-2">&copy; 2026 Jinju Kim. All rights reserved.</p>
+            <!-- 3회 연속 클릭 시 관리자 로그인 창이 뜨는 카피라이트 영역 -->
+            <p id="adminTrigger" class="text-[10px] text-center text-gray-400 mt-2 cursor-pointer select-none" title="관리자 로그인">&copy; 2026 Jinju Kim. All rights reserved.</p>
         </div>
     </aside>
 
@@ -144,7 +147,7 @@
                     </div>
                 </div>
 
-                <!-- 수정/삭제 버튼 영역 -->
+                <!-- 관리자 모드에서만 보이는 수정/삭제 버튼 영역 -->
                 <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/60 text-xs">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
                         <div>
@@ -164,7 +167,7 @@
                             <span class="font-bold text-gray-700 dark:text-gray-200" id="modalTech"></span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 ml-4 pl-4 border-l border-gray-200 dark:border-slate-700">
+                    <div id="adminActionButtons" class="flex items-center gap-2 ml-4 pl-4 border-l border-gray-200 dark:border-slate-700 admin-only">
                         <button id="modalEditBtn" onclick="" class="px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium transition flex items-center gap-1">
                             <i class="fa-solid fa-pen text-[10px]"></i> 수정
                         </button>
@@ -365,6 +368,53 @@
             localStorage.setItem('portfolioProjects', JSON.stringify(projectsData));
         }
 
+        // 관리자 모드 여부 확인 및 UI 토글
+        let isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+
+        function updateAdminUI() {
+            const adminElements = document.querySelectorAll('.admin-only');
+            adminElements.forEach(el => {
+                if (isAdmin) {
+                    el.style.display = el.tagName === 'BUTTON' ? 'flex' : 'block';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+        }
+
+        // 카피라이트 3회 연속 클릭 시 관리자 인증 창 띄우기
+        let clickCount = 0;
+        let clickTimer = null;
+        document.getElementById('adminTrigger').addEventListener('click', () => {
+            clickCount++;
+            if (clickTimer) clearTimeout(clickTimer);
+            
+            if (clickCount >= 3) {
+                clickCount = 0;
+                if (isAdmin) {
+                    if (confirm('관리자 모드를 로그아웃(잠금) 하시겠습니까?')) {
+                        sessionStorage.removeItem('isAdmin');
+                        isAdmin = false;
+                        updateAdminUI();
+                        alert('관리자 모드가 해제되었습니다.');
+                    }
+                } else {
+                    const pw = prompt('관리자 비밀번호를 입력하세요:');
+                    // 🔑 비밀번호는 원하시는 대로 변경하실 수 있습니다 (현재 기본값: 1234)
+                    if (pw === '1234') { 
+                        isAdmin = true;
+                        sessionStorage.setItem('isAdmin', 'true');
+                        updateAdminUI();
+                        alert('관리자 모드가 활성화되었습니다!');
+                    } else if (pw !== null) {
+                        alert('비밀번호가 틀렸습니다.');
+                    }
+                }
+            } else {
+                clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
+            }
+        });
+
         function renderProjects() {
             const grid = document.getElementById('projectGrid');
             grid.innerHTML = '';
@@ -436,7 +486,6 @@
             document.getElementById('modalDemoLink').href = project.demo || '#';
             document.getElementById('modalGithubLink').href = project.github || '#';
 
-            // 수정 및 삭제 버튼에 이벤트 연결
             document.getElementById('modalEditBtn').setAttribute('onclick', `openEditModal('${id}')`);
             document.getElementById('modalDeleteBtn').setAttribute('onclick', `deleteProject('${id}')`);
 
@@ -527,7 +576,6 @@
             updateSlidePosition();
         }
 
-        // 프로젝트 등록 모달 열기
         function openRegisterModal() {
             document.getElementById('registerModalTitle').innerText = "새 프로젝트 등록";
             document.getElementById('regSubmitBtn').innerText = "프로젝트 등록하기";
@@ -539,7 +587,6 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // 프로젝트 수정 모달 열기
         function openEditModal(id) {
             closeDetailModal();
             const p = projectsData[id];
@@ -573,7 +620,6 @@
             document.body.style.overflow = 'auto';
         }
 
-        // 등록 및 수정 저장 처리
         function saveNewProject(e) {
             e.preventDefault();
             const editId = document.getElementById('editProjectId').value;
@@ -613,7 +659,6 @@
             alert(editId ? '프로젝트가 성공적으로 수정되었습니다!' : '새로운 프로젝트가 성공적으로 등록되었습니다!');
         }
 
-        // 프로젝트 삭제 처리
         function deleteProject(id) {
             if(confirm('정말 이 프로젝트를 삭제하시겠습니까?')) {
                 delete projectsData[id];
@@ -624,7 +669,6 @@
             }
         }
 
-        // 연락 모달 제어
         function openContactModal() {
             document.getElementById('contactModal').classList.remove('hidden');
             document.getElementById('contactModal').classList.add('flex');
@@ -654,6 +698,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             renderProjects();
+            updateAdminUI();
         });
     </script>
 </body>
