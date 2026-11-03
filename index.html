@@ -375,7 +375,12 @@
             const adminElements = document.querySelectorAll('.admin-only');
             adminElements.forEach(el => {
                 if (isAdmin) {
-                    el.style.display = (el.id === 'adminActionButtons') ? 'flex' : 'flex';
+                    // 요소의 고유 ID에 따라 적절한 display 값 지정
+                    if (el.id === 'adminActionButtons') {
+                        el.style.display = 'flex';
+                    } else {
+                        el.style.display = 'flex';
+                    }
                 } else {
                     el.style.display = 'none';
                 }
