@@ -77,14 +77,14 @@
         </div>
 
         <div class="space-y-2">
-            <!-- 관리자 모드에서만 보이는 새 프로젝트 등록 버튼 -->
-            <button id="registerBtn" onclick="openRegisterModal()" class="w-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 font-medium py-2 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 admin-only">
+            <!-- 새 프로젝트 등록 버튼 (관리자 모드 전용) -->
+            <button id="registerBtn" onclick="openRegisterModal()" class="w-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 font-medium py-2 px-4 rounded-xl text-xs transition items-center justify-center gap-2 admin-only">
                 <i class="fa-solid fa-plus text-emerald-500"></i> 새 프로젝트 등록
             </button>
             <button onclick="openContactModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm transition shadow-sm flex items-center justify-center gap-2">
                 <i class="fa-regular fa-paper-plane"></i> 연락 및 협업 제안
             </button>
-            <!-- 3회 연속 클릭 시 관리자 로그인 창이 뜨는 카피라이트 영역 -->
+            <!-- 3회 연속 클릭 시 비밀번호 창이 뜨는 트리거 영역 -->
             <p id="adminTrigger" class="text-[10px] text-center text-gray-400 mt-2 cursor-pointer select-none" title="관리자 로그인">&copy; 2026 Jinju Kim. All rights reserved.</p>
         </div>
     </aside>
@@ -147,8 +147,8 @@
                     </div>
                 </div>
 
-                <!-- 관리자 모드에서만 보이는 수정/삭제 버튼 영역 -->
-                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/60 text-xs">
+                <!-- 수정/삭제 버튼 영역 (관리자 모드 전용) -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/60 text-xs gap-4">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
                         <div>
                             <span class="text-gray-400 block mb-0.5">클라이언트</span>
@@ -167,11 +167,11 @@
                             <span class="font-bold text-gray-700 dark:text-gray-200" id="modalTech"></span>
                         </div>
                     </div>
-                    <div id="adminActionButtons" class="flex items-center gap-2 ml-4 pl-4 border-l border-gray-200 dark:border-slate-700 admin-only">
-                        <button id="modalEditBtn" onclick="" class="px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium transition flex items-center gap-1">
+                    <div id="adminActionButtons" class="items-center gap-2 md:pl-4 md:border-l border-gray-200 dark:border-slate-700 admin-only">
+                        <button id="modalEditBtn" onclick="" class="px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium transition inline-flex items-center gap-1">
                             <i class="fa-solid fa-pen text-[10px]"></i> 수정
                         </button>
-                        <button id="modalDeleteBtn" onclick="" class="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition flex items-center gap-1">
+                        <button id="modalDeleteBtn" onclick="" class="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition inline-flex items-center gap-1">
                             <i class="fa-solid fa-trash text-[10px]"></i> 삭제
                         </button>
                     </div>
@@ -368,14 +368,14 @@
             localStorage.setItem('portfolioProjects', JSON.stringify(projectsData));
         }
 
-        // 관리자 모드 여부 확인 및 UI 토글
+        // 관리자 모드 여부 확인 및 UI 토글 (비밀번호: 9248)
         let isAdmin = sessionStorage.getItem('isAdmin') === 'true';
 
         function updateAdminUI() {
             const adminElements = document.querySelectorAll('.admin-only');
             adminElements.forEach(el => {
                 if (isAdmin) {
-                    el.style.display = el.tagName === 'BUTTON' ? 'flex' : 'block';
+                    el.style.display = (el.id === 'adminActionButtons') ? 'flex' : 'flex';
                 } else {
                     el.style.display = 'none';
                 }
