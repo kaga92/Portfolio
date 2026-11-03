@@ -368,23 +368,32 @@
             localStorage.setItem('portfolioProjects', JSON.stringify(projectsData));
         }
 
-        // 관리자 모드 여부 확인 및 UI 토글 (비밀번호: 9248)
+        // 관리자 모드 상태 및 UI 제어 (비밀번호: 9248)
         let isAdmin = sessionStorage.getItem('isAdmin') === 'true';
 
         function updateAdminUI() {
-            const adminElements = document.querySelectorAll('.admin-only');
-            adminElements.forEach(el => {
-                if (isAdmin) {
-                    // 요소의 고유 ID에 따라 적절한 display 값 지정
-                    if (el.id === 'adminActionButtons') {
-                        el.style.display = 'flex';
-                    } else {
-                        el.style.display = 'flex';
-                    }
-                } else {
-                    el.style.display = 'none';
+            const registerBtn = document.getElementById('registerBtn');
+            const adminActionButtons = document.getElementById('adminActionButtons');
+
+            if (isAdmin) {
+                if (registerBtn) {
+                    registerBtn.classList.remove('admin-only');
+                    registerBtn.style.display = 'flex';
                 }
-            });
+                if (adminActionButtons) {
+                    adminActionButtons.classList.remove('admin-only');
+                    adminActionButtons.style.display = 'flex';
+                }
+            } else {
+                if (registerBtn) {
+                    registerBtn.classList.add('admin-only');
+                    registerBtn.style.display = 'none';
+                }
+                if (adminActionButtons) {
+                    adminActionButtons.classList.add('admin-only');
+                    adminActionButtons.style.display = 'none';
+                }
+            }
         }
 
         // 카피라이트 3회 연속 클릭 시 관리자 인증 창 띄우기
