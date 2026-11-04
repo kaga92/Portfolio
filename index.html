@@ -27,7 +27,7 @@
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Pretendard', sans-serif; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -168,81 +168,103 @@
         </div>
     </div>
 
-    <!-- 프로젝트 상세 정보 모달 (갤러리 슬라이더 포함) -->
-    <div id="detailModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4 md:p-6 overflow-y-auto">
-        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative border border-gray-200 dark:border-slate-700 transform scale-95 opacity-0 transition-all duration-300" id="modalContainer">
-            <button onclick="closeDetailModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/50 text-white hover:bg-black/70 flex items-center justify-center transition">
+    <!-- 와이드 스플릿(Wide Split) 레이아웃 모달 -->
+    <div id="detailModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-2 lg:p-6 overflow-hidden">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-[96vw] h-[92vh] shadow-2xl relative border border-gray-200 dark:border-slate-800 flex flex-col md:flex-row overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalContainer">
+            
+            <!-- 닫기 버튼 (우측 상단 고정) -->
+            <button onclick="closeDetailModal()" class="absolute top-4 right-4 z-30 w-10 h-10 rounded-full bg-black/50 text-white hover:bg-black/80 flex items-center justify-center transition shadow-md backdrop-blur-sm">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
 
-            <div class="relative bg-gray-900 aspect-[16/9] overflow-hidden">
-                <div id="sliderTrack" class="w-full h-full flex transition-transform duration-500 ease-out"></div>
-                <button onclick="prevSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-black/70 flex items-center justify-center transition backdrop-blur-sm">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </button>
-                <button onclick="nextSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-black/70 flex items-center justify-center transition backdrop-blur-sm">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
-                <div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full font-medium" id="slideIndicator">1 / 3</div>
-            </div>
-
-            <div class="bg-gray-100 dark:bg-slate-900 px-6 py-3 flex gap-2 overflow-x-auto" id="thumbnailBar"></div>
-
-            <div class="p-6 md:p-8 space-y-6">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <span id="modalCategory" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 block"></span>
-                        <h2 id="modalTitle" class="text-2xl md:text-3xl font-bold"></h2>
+            <!-- [좌측 패널] 고정 높이 상세 정보 영역 (높이 고정, 내부 스크롤) -->
+            <div class="w-full md:w-[380px] lg:w-[440px] xl:w-[480px] bg-white dark:bg-slate-900 p-6 lg:p-10 flex flex-col justify-between border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-800 overflow-y-auto flex-shrink-0">
+                <div class="space-y-6">
+                    <!-- 상단 서브 카테고리 태그 -->
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] uppercase font-bold tracking-widest text-orange-500 dark:text-orange-400 flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 bg-orange-500 rounded-full inline-block"></span>
+                            <span id="modalCategory">CONTENTS</span>
+                        </span>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <a id="modalDemoLink" href="#" target="_blank" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition shadow-sm flex items-center gap-2">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i> 라이브 데모
-                        </a>
-                        <a id="modalGithubLink" href="#" target="_blank" class="px-4 py-2 rounded-xl bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 text-xs font-semibold transition flex items-center gap-2">
-                            <i class="fa-brands fa-github"></i> 소스 코드
-                        </a>
+
+                    <!-- 프로젝트 타이틀 -->
+                    <h2 id="modalTitle" class="text-2xl lg:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight"></h2>
+
+                    <hr class="border-gray-100 dark:border-slate-800">
+
+                    <!-- 세부 항목 정보들 -->
+                    <div class="space-y-5 text-xs lg:text-sm">
+                        <!-- Overview -->
+                        <div>
+                            <h3 class="text-orange-500 dark:text-orange-400 font-bold mb-1.5 text-xs uppercase tracking-wider">Overview</h3>
+                            <p id="modalDesc" class="text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line text-xs"></p>
+                        </div>
+
+                        <!-- 사용 프로그램 / 스택 -->
+                        <div>
+                            <h3 class="text-orange-500 dark:text-orange-400 font-bold mb-1 text-xs uppercase tracking-wider">사용 프로그램</h3>
+                            <p id="modalTech" class="text-gray-700 dark:text-gray-200 font-medium text-xs"></p>
+                        </div>
+
+                        <!-- 콘텐츠 / 클라이언트 -->
+                        <div>
+                            <h3 class="text-orange-500 dark:text-orange-400 font-bold mb-1 text-xs uppercase tracking-wider">클라이언트 및 콘텐츠</h3>
+                            <p id="modalClient" class="text-gray-700 dark:text-gray-200 font-medium text-xs"></p>
+                        </div>
+
+                        <!-- 참여도 & 역할 -->
+                        <div>
+                            <h3 class="text-orange-500 dark:text-orange-400 font-bold mb-1 text-xs uppercase tracking-wider">참여도 및 역할</h3>
+                            <p id="modalRole" class="text-emerald-600 dark:text-emerald-400 font-bold text-xs"></p>
+                        </div>
+
+                        <!-- 작업 기간 -->
+                        <div>
+                            <h3 class="text-orange-500 dark:text-orange-400 font-bold mb-1 text-xs uppercase tracking-wider">작업 기간</h3>
+                            <p id="modalPeriod" class="text-gray-600 dark:text-gray-400 text-xs"></p>
+                        </div>
+
+                        <!-- Color Palette -->
+                        <div id="colorSystemSection" class="hidden">
+                            <h3 class="text-orange-500 dark:text-orange-400 font-bold mb-2 text-xs uppercase tracking-wider">Color Palette</h3>
+                            <div class="flex flex-wrap gap-2" id="modalColorChips"></div>
+                        </div>
+
+                        <!-- Highlights -->
+                        <div>
+                            <h3 class="text-orange-500 dark:text-orange-400 font-bold mb-2 text-xs uppercase tracking-wider">핵심 성과</h3>
+                            <div class="space-y-1.5" id="modalHighlights"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 수정/삭제 버튼 영역 (관리자 모드 전용) -->
-                <div class="flex flex-col md:flex-row md:items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/60 text-xs gap-4">
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
-                        <div>
-                            <span class="text-gray-400 block mb-0.5">클라이언트</span>
-                            <span class="font-bold text-gray-700 dark:text-gray-200" id="modalClient"></span>
-                        </div>
-                        <div>
-                            <span class="text-gray-400 block mb-0.5">작업 기간</span>
-                            <span class="font-bold text-gray-700 dark:text-gray-200" id="modalPeriod"></span>
-                        </div>
-                        <div>
-                            <span class="text-gray-400 block mb-0.5">참여 역할</span>
-                            <span class="font-bold text-emerald-600 dark:text-emerald-400" id="modalRole"></span>
-                        </div>
-                        <div>
-                            <span class="text-gray-400 block mb-0.5">사용 스택</span>
-                            <span class="font-bold text-gray-700 dark:text-gray-200" id="modalTech"></span>
-                        </div>
+                <!-- 하단 링크 및 관리자 액션 바 -->
+                <div class="pt-6 mt-6 border-t border-gray-100 dark:border-slate-800 space-y-3">
+                    <div class="flex items-center gap-2">
+                        <a id="modalDemoLink" href="#" target="_blank" class="flex-1 py-2.5 px-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition text-center shadow-sm flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> 라이브 데모
+                        </a>
+                        <a id="modalGithubLink" href="#" target="_blank" class="flex-1 py-2.5 px-3 rounded-xl bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200 text-xs font-bold transition text-center flex items-center justify-center gap-1.5">
+                            <i class="fa-brands fa-github"></i> 소스 코드
+                        </a>
                     </div>
-                    <div id="adminActionButtons" class="items-center gap-2 md:pl-4 md:border-l border-gray-200 dark:border-slate-700 admin-only">
-                        <button id="modalEditBtn" onclick="" class="px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium transition inline-flex items-center gap-1">
+
+                    <!-- 관리자 모드 버튼 -->
+                    <div id="adminActionButtons" class="pt-2 flex items-center justify-between gap-2 admin-only">
+                        <button id="modalEditBtn" onclick="" class="flex-1 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium transition inline-flex items-center justify-center gap-1">
                             <i class="fa-solid fa-pen text-[10px]"></i> 수정
                         </button>
-                        <button id="modalDeleteBtn" onclick="" class="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition inline-flex items-center gap-1">
+                        <button id="modalDeleteBtn" onclick="" class="flex-1 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-medium transition inline-flex items-center justify-center gap-1">
                             <i class="fa-solid fa-trash text-[10px]"></i> 삭제
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <div>
-                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2">프로젝트 개요</h3>
-                    <p id="modalDesc" class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed"></p>
-                </div>
-
-                <div>
-                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-3">핵심 구현 사항 & 성과</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="modalHighlights"></div>
-                </div>
+            <!-- [우측 패널] 등록된 원본 이미지 크기 그대로 출력 및 독립 스크롤 가능 영역 -->
+            <div class="flex-1 bg-gray-100 dark:bg-slate-950 overflow-y-auto p-6 lg:p-12 space-y-6 flex flex-col items-center shadow-inner" id="longImageContainer">
+                <!-- 동적 이미지들이 본래 비율로 스크롤 가능하게 렌더링됨 -->
             </div>
         </div>
     </div>
@@ -254,13 +276,13 @@
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
             <h3 id="registerModalTitle" class="text-xl font-bold mb-2">새 프로젝트 등록</h3>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">포트폴리오에 추가할 프로젝트 정보를 입력해주세요.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">상세 페이지에 표시될 정보와 이미지들을 입력해주세요.</p>
             
             <form onsubmit="saveNewProject(event)" class="space-y-4 text-xs">
                 <input type="hidden" id="editProjectId" value="">
                 <div>
                     <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">프로젝트 제목</label>
-                    <input type="text" id="regTitle" required placeholder="예: 핀테크 대시보드 플랫폼" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="regTitle" required placeholder="예: KMCA 웹사이트 리디자인" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -272,8 +294,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">클라이언트 / 회사</label>
-                        <input type="text" id="regClient" required placeholder="예: 넥스트파이낸스" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
+                        <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">클라이언트 / 콘텐츠</label>
+                        <input type="text" id="regClient" required placeholder="예: 한국음악콘텐츠협회" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
@@ -282,13 +304,13 @@
                         <input type="text" id="regPeriod" required placeholder="예: 2025.10 - 2025.12" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">참여 역할</label>
-                        <input type="text" id="regRole" required placeholder="예: Design 100% / Pub 100%" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
+                        <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">참여도 및 역할</label>
+                        <input type="text" id="regRole" required placeholder="예: 100%, 1인 프로젝트" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
                     </div>
                 </div>
                 <div>
-                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">사용 스택</label>
-                    <input type="text" id="regTech" required placeholder="예: HTML5, Tailwind CSS, Vanilla JS" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
+                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">사용 프로그램 / 스택</label>
+                    <input type="text" id="regTech" required placeholder="예: Photoshop, Figma, HTML5, Tailwind CSS" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -301,19 +323,23 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">썸네일 이미지 URL</label>
+                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">목록 카드 썸네일 이미지 URL</label>
                     <input type="url" id="regThumbnail" required placeholder="https://images.unsplash.com/..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">상세 갤러리 이미지 URLs (쉼표로 구분)</label>
+                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">우측 스크롤 이미지 URLs (쉼표로 구분)</label>
                     <input type="text" id="regImages" required placeholder="URL1, URL2, URL3" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">프로젝트 개요 설명</label>
-                    <textarea rows="3" id="regDesc" required placeholder="프로젝트에 대한 상세 설명을 입력하세요." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500 resize-none"></textarea>
+                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">Color Palette 코드 (쉼표로 구분)</label>
+                    <input type="text" id="regColors" placeholder="#ff7700, #1e293b, #f8fafc" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">핵심 구현 사항 (줄바꿈으로 구분)</label>
+                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">Overview (개요 설명)</label>
+                    <textarea rows="3" id="regDesc" required placeholder="프로젝트에 대한 설명 및 기획 배경을 입력하세요." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500 resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">핵심 구현 성과 (줄바꿈으로 구분)</label>
                     <textarea rows="3" id="regHighlights" required placeholder="성과 1&#10;성과 2" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500 resize-none"></textarea>
                 </div>
                 <button type="submit" id="regSubmitBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl transition shadow-sm">
@@ -438,28 +464,29 @@
             alert('프로필 정보가 성공적으로 수정되었습니다!');
         }
 
-        // 초기 기본 프로젝트 데이터
+        // 초기 기본 프로젝트 데이터 (레퍼런스 이미지 기반 데모)
         const defaultProjects = {
             1: {
-                title: "넥스트파이낸스 서비스 구축",
+                title: "KMCA 웹사이트 리디자인",
                 category: "web",
                 displayCategory: "Web Publishing",
-                client: "넥스트파이낸스 (주)",
+                client: "한국음악콘텐츠협회",
                 period: "2025.10 - 2025.12 (3개월)",
-                role: "Design 100% / Pub 100%",
-                tech: "HTML5, Tailwind CSS, Vanilla JS",
+                role: "100%, 1인 프로젝트",
+                tech: "Photoshop, Figma, HTML5, CSS3",
                 demo: "https://example.com",
                 github: "https://github.com",
-                desc: "사용자 자산 상태와 투자 포트폴리오를 한눈에 파악할 수 있는 반응형 웹 대시보드 인터페이스 디자인 및 퍼블리싱 프로젝트입니다.",
+                desc: "한국음악콘텐츠협회 웹사이트 리디자인 가상 프로젝트를 진행했습니다. 기존 사이트의 익숙함을 유지하면서 정보 접근성을 높이고 사용자 편의성을 개선하는 것을 목표로 했습니다.",
                 highlights: [
-                    "웹 접근성 표준(WCAG 2.1) 준수 및 키보드 네비게이션 최적화",
-                    "다크모드 완벽 지원 및 컴포넌트 모듈화 설계",
-                    "모바일 환경을 고려한 반응형 그리드 시스템 적용"
+                    "메인페이지, 서브페이지1, 서브페이지2 인터페이스 정밀 설계",
+                    "웹 접근성 표준 준수 및 정보 구조 재구성"
                 ],
+                colors: ["#ff7700", "#1e293b", "#f8fafc"],
                 thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800",
                 images: [
-                    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1200",
-                    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200"
+                    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1400",
+                    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1400",
+                    "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&q=80&w=1400"
                 ]
             },
             2: {
@@ -477,10 +504,11 @@
                     "사용자 테스트 기반 장바구니/결제 전환율 15% 개선",
                     "디자인 시스템 구축으로 개발 소요 시간 단축"
                 ],
+                colors: ["#ec4899", "#f43f5e", "#18181b"],
                 thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
                 images: [
-                    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200",
-                    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1200"
+                    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1400",
+                    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1400"
                 ]
             }
         };
@@ -612,12 +640,8 @@
             });
         }
 
-        let currentSlide = 0;
-        let currentProjectImages = [];
-        let activeModalId = null;
-
+        // 와이드 스플릿 모달 열기 (우측 패널에 원본 비율 이미지 롱 스크롤 구성)
         function openDetailModal(id) {
-            activeModalId = id;
             const project = projectsData[id];
             if(!project) return;
 
@@ -634,18 +658,44 @@
             document.getElementById('modalEditBtn').setAttribute('onclick', `openEditModal('${id}')`);
             document.getElementById('modalDeleteBtn').setAttribute('onclick', `deleteProject('${id}')`);
 
+            // 하이라이트 렌더링
             const highlightsContainer = document.getElementById('modalHighlights');
             highlightsContainer.innerHTML = '';
             project.highlights.forEach(item => {
                 const div = document.createElement('div');
-                div.className = 'flex items-start gap-2.5 p-3 rounded-xl bg-gray-50 dark:bg-slate-900/60 border border-gray-100 dark:border-slate-700/60 text-xs text-gray-600 dark:text-gray-300';
-                div.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 mt-0.5"></i><span>${item}</span>`;
+                div.className = 'flex items-start gap-2 text-xs text-gray-600 dark:text-gray-300';
+                div.innerHTML = `<i class="fa-solid fa-angle-right text-orange-500 mt-0.5 text-[10px]"></i><span>${item}</span>`;
                 highlightsContainer.appendChild(div);
             });
 
-            currentProjectImages = project.images && project.images.length > 0 ? project.images : [project.thumbnail];
-            currentSlide = 0;
-            renderSlider();
+            // Color Palette 렌더링
+            const colorSystemSection = document.getElementById('colorSystemSection');
+            const colorChipsContainer = document.getElementById('modalColorChips');
+            colorChipsContainer.innerHTML = '';
+            if (project.colors && project.colors.length > 0) {
+                colorSystemSection.classList.remove('hidden');
+                project.colors.forEach(colorHex => {
+                    const chip = document.createElement('div');
+                    chip.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-[11px]';
+                    chip.innerHTML = `<span class="w-3.5 h-3.5 rounded-full shadow-inner border border-black/10" style="background-color: ${colorHex};"></span><span class="font-mono">${colorHex}</span>`;
+                    colorChipsContainer.appendChild(chip);
+                });
+            } else {
+                colorSystemSection.classList.add('hidden');
+            }
+
+            // 우측 패널 이미지 렌더링 (원본 크기 비율 유지 및 자연스러운 세로 스크롤)
+            const longImageContainer = document.getElementById('longImageContainer');
+            longImageContainer.innerHTML = '';
+            const imagesToDisplay = project.images && project.images.length > 0 ? project.images : [project.thumbnail];
+            imagesToDisplay.forEach((imgSrc, idx) => {
+                const imgElem = document.createElement('img');
+                imgElem.src = imgSrc;
+                imgElem.alt = `작업물 상세 이미지 ${idx + 1}`;
+                // w-full과 h-auto, block 설정을 통해 왜곡 없이 원본 높이대로 길게 스크롤되도록 적용
+                imgElem.className = 'w-full h-auto block rounded-2xl shadow-lg border border-gray-200/40 dark:border-slate-800 bg-white dark:bg-slate-900';
+                longImageContainer.appendChild(imgElem);
+            });
 
             const modal = document.getElementById('detailModal');
             const container = document.getElementById('modalContainer');
@@ -668,57 +718,6 @@
                 modal.classList.add('hidden');
                 document.body.style.overflow = 'auto';
             }, 200);
-        }
-
-        function renderSlider() {
-            const track = document.getElementById('sliderTrack');
-            const thumbBar = document.getElementById('thumbnailBar');
-            track.innerHTML = '';
-            thumbBar.innerHTML = '';
-
-            currentProjectImages.forEach((imgSrc, index) => {
-                const slideDiv = document.createElement('div');
-                slideDiv.className = 'w-full h-full flex-shrink-0';
-                slideDiv.innerHTML = `<img src="${imgSrc}" class="w-full h-full object-cover" alt="슬라이드 이미지">`;
-                track.appendChild(slideDiv);
-
-                const thumbBtn = document.createElement('button');
-                thumbBtn.className = `w-16 h-12 rounded-lg overflow-hidden flex-shrink-0 border-2 transition ${index === currentSlide ? 'border-emerald-500 opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`;
-                thumbBtn.onclick = () => goToSlide(index);
-                thumbBtn.innerHTML = `<img src="${imgSrc}" class="w-full h-full object-cover" alt="썸네일">`;
-                thumbBar.appendChild(thumbBtn);
-            });
-            updateSlidePosition();
-        }
-
-        function updateSlidePosition() {
-            const track = document.getElementById('sliderTrack');
-            track.style.transform = `translateX(-${currentSlide * 100}%)`;
-            document.getElementById('slideIndicator').innerText = `${currentSlide + 1} / ${currentProjectImages.length}`;
-            
-            const thumbs = document.querySelectorAll('#thumbnailBar button');
-            thumbs.forEach((btn, idx) => {
-                if(idx === currentSlide) {
-                    btn.className = 'w-16 h-12 rounded-lg overflow-hidden flex-shrink-0 border-2 border-emerald-500 opacity-100 transition';
-                } else {
-                    btn.className = 'w-16 h-12 rounded-lg overflow-hidden flex-shrink-0 border-2 border-transparent opacity-60 hover:opacity-100 transition';
-                }
-            });
-        }
-
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % currentProjectImages.length;
-            updateSlidePosition();
-        }
-
-        function prevSlide() {
-            currentSlide = (currentSlide - 1 + currentProjectImages.length) % currentProjectImages.length;
-            updateSlidePosition();
-        }
-
-        function goToSlide(index) {
-            currentSlide = index;
-            updateSlidePosition();
         }
 
         function openRegisterModal() {
@@ -751,6 +750,7 @@
             document.getElementById('regGithub').value = p.github || '';
             document.getElementById('regThumbnail').value = p.thumbnail;
             document.getElementById('regImages').value = p.images ? p.images.join(', ') : '';
+            document.getElementById('regColors').value = p.colors ? p.colors.join(', ') : '';
             document.getElementById('regDesc').value = p.desc;
             document.getElementById('regHighlights').value = p.highlights ? p.highlights.join('\n') : '';
 
@@ -779,6 +779,9 @@
             const imagesRaw = document.getElementById('regImages').value;
             const imagesArr = imagesRaw.split(',').map(item => item.trim()).filter(item => item.length > 0);
 
+            const colorsRaw = document.getElementById('regColors').value;
+            const colorsArr = colorsRaw ? colorsRaw.split(',').map(item => item.trim()).filter(item => item.length > 0) : [];
+
             const targetId = editId ? editId : Date.now();
 
             projectsData[targetId] = {
@@ -793,6 +796,7 @@
                 github: document.getElementById('regGithub').value,
                 thumbnail: document.getElementById('regThumbnail').value,
                 images: imagesArr.length > 0 ? imagesArr : [document.getElementById('regThumbnail').value],
+                colors: colorsArr,
                 desc: document.getElementById('regDesc').value,
                 highlights: highlightsArr.length > 0 ? highlightsArr : ["프로젝트 성과 등록 완료"]
             };
