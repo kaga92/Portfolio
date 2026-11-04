@@ -40,7 +40,7 @@
 <body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col md:flex-row">
 
     <!-- 좌측 고정 프로필 사이드바 -->
-    <aside class="w-full md:w-80 lg:w-96 bg-white dark:bg-slate-800 border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-700 p-6 md:p-8 flex flex-col justify-between md:fixed md:h-screen z-20 shadow-sm">
+    <aside class="w-full md:w-80 lg:w-96 bg-white dark:bg-slate-800 border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-700 p-6 md:p-8 flex flex-col justify-between md:fixed md:h-screen z-20 shadow-sm overflow-y-auto">
         <div>
             <div class="flex items-center justify-between mb-8">
                 <a href="#" class="font-bold text-lg tracking-tight flex items-center gap-2">
@@ -53,25 +53,33 @@
                 </button>
             </div>
 
+            <!-- 프로필 수정 버튼 (관리자 전용) -->
+            <div class="mb-4 admin-only" id="profileEditBtnContainer">
+                <button onclick="openProfileModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-1.5 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-user-pen"></i> 프로필 정보 수정
+                </button>
+            </div>
+
             <div class="text-center md:text-left mb-8">
                 <div class="relative w-24 h-24 mx-auto md:mx-0 mb-4 rounded-2xl overflow-hidden shadow-md border-2 border-emerald-500/20">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400" alt="프로필 이미지" class="w-full h-full object-cover">
+                    <img id="profileImage" src="" alt="프로필 이미지" class="w-full h-full object-cover">
                 </div>
-                <h1 class="text-xl font-bold mb-1">김진주 <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Jinju Kim</span></h1>
-                <p class="text-emerald-600 dark:text-emerald-400 font-medium text-sm mb-3">UI/UX Designer & Web Publisher</p>
-                <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                    시각적 완성도 높은 UI 디자인과 웹 표준·접근성을 준수하는 깔끔한 퍼블리싱을 지향합니다. 사용자 중심의 경험을 코드로 실현합니다.
-                </p>
+                <h1 class="text-xl font-bold mb-1">
+                    <span id="profileName"></span> 
+                    <span id="profileEngName" class="text-sm font-normal text-gray-500 dark:text-gray-400"></span>
+                </h1>
+                <p id="profileRole" class="text-emerald-600 dark:text-emerald-400 font-medium text-sm mb-3"></p>
+                <p id="profileDesc" class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-line"></p>
             </div>
 
             <div class="space-y-2 text-xs text-gray-600 dark:text-gray-300 mb-6">
                 <div class="flex items-center gap-2.5">
                     <i class="fa-regular fa-envelope text-emerald-500 w-4"></i>
-                    <span>jinju.design@example.com</span>
+                    <span id="profileEmail"></span>
                 </div>
                 <div class="flex items-center gap-2.5">
                     <i class="fa-brands fa-github text-emerald-500 w-4"></i>
-                    <a href="https://github.com" target="_blank" class="hover:underline">github.com/jinju-dev</a>
+                    <a id="profileGithub" href="#" target="_blank" class="hover:underline truncate"></a>
                 </div>
             </div>
         </div>
@@ -110,6 +118,55 @@
         <!-- 프로젝트 카드 그리드가 동적으로 렌더링될 영역 -->
         <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6" id="projectGrid"></div>
     </main>
+
+    <!-- 프로필 수정 모달 (관리자 전용) -->
+    <div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-8 shadow-2xl relative border border-gray-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-xl font-bold mb-2">프로필 정보 수정</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">사이드바에 표시될 프로필 정보를 입력해주세요.</p>
+            
+            <form onsubmit="saveProfile(event)" class="space-y-4 text-xs">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">이름 (한글)</label>
+                        <input type="text" id="editProfName" required placeholder="예: 김진주" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">이름 (영문)</label>
+                        <input type="text" id="editProfEngName" required placeholder="예: Jinju Kim" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">직함 / 역할</label>
+                    <input type="text" id="editProfRole" required placeholder="예: UI/UX Designer & Web Publisher" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">프로필 이미지 URL</label>
+                    <input type="url" id="editProfImage" required placeholder="https://..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">자기소개글</label>
+                    <textarea id="editProfDesc" rows="3" required placeholder="간단한 자기소개를 작성하세요." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500 resize-none"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">이메일 주소</label>
+                        <input type="email" id="editProfEmail" required placeholder="example@domain.com" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1 text-gray-600 dark:text-gray-300">GitHub 주소</label>
+                        <input type="url" id="editProfGithub" required placeholder="https://github.com/..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2">
+                    프로필 저장하기
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- 프로젝트 상세 정보 모달 (갤러리 슬라이더 포함) -->
     <div id="detailModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4 md:p-6 overflow-y-auto">
@@ -315,6 +372,72 @@
             }
         });
 
+        // 프로필 기본 데이터 설정 및 저장소 관리
+        const defaultProfile = {
+            name: "김진주",
+            engName: "Jinju Kim",
+            role: "UI/UX Designer & Web Publisher",
+            image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400",
+            desc: "시각적 완성도 높은 UI 디자인과 웹 표준·접근성을 준수하는 깔끔한 퍼블리싱을 지향합니다. 사용자 중심의 경험을 코드로 실현합니다.",
+            email: "jinju.design@example.com",
+            github: "https://github.com/jinju-dev"
+        };
+
+        let profileData = JSON.parse(localStorage.getItem('portfolioProfile')) || defaultProfile;
+
+        function renderProfile() {
+            document.getElementById('profileName').innerText = profileData.name;
+            document.getElementById('profileEngName').innerText = profileData.engName;
+            document.getElementById('profileRole').innerText = profileData.role;
+            document.getElementById('profileImage').src = profileData.image;
+            document.getElementById('profileDesc').innerText = profileData.desc;
+            document.getElementById('profileEmail').innerText = profileData.email;
+            
+            const githubElem = document.getElementById('profileGithub');
+            githubElem.innerText = profileData.github.replace(/^https?:\/\//, '');
+            githubElem.href = profileData.github;
+        }
+
+        function openProfileModal() {
+            document.getElementById('editProfName').value = profileData.name;
+            document.getElementById('editProfEngName').value = profileData.engName;
+            document.getElementById('editProfRole').value = profileData.role;
+            document.getElementById('editProfImage').value = profileData.image;
+            document.getElementById('editProfDesc').value = profileData.desc;
+            document.getElementById('editProfEmail').value = profileData.email;
+            document.getElementById('editProfGithub').value = profileData.github;
+
+            const modal = document.getElementById('profileModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProfileModal() {
+            const modal = document.getElementById('profileModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function saveProfile(e) {
+            e.preventDefault();
+            profileData = {
+                name: document.getElementById('editProfName').value,
+                engName: document.getElementById('editProfEngName').value,
+                role: document.getElementById('editProfRole').value,
+                image: document.getElementById('editProfImage').value,
+                desc: document.getElementById('editProfDesc').value,
+                email: document.getElementById('editProfEmail').value,
+                github: document.getElementById('editProfGithub').value
+            };
+
+            localStorage.setItem('portfolioProfile', JSON.stringify(profileData));
+            renderProfile();
+            closeProfileModal();
+            alert('프로필 정보가 성공적으로 수정되었습니다!');
+        }
+
         // 초기 기본 프로젝트 데이터
         const defaultProjects = {
             1: {
@@ -374,6 +497,7 @@
         function updateAdminUI() {
             const registerBtn = document.getElementById('registerBtn');
             const adminActionButtons = document.getElementById('adminActionButtons');
+            const profileEditBtnContainer = document.getElementById('profileEditBtnContainer');
 
             if (isAdmin) {
                 if (registerBtn) {
@@ -384,6 +508,10 @@
                     adminActionButtons.classList.remove('admin-only');
                     adminActionButtons.style.display = 'flex';
                 }
+                if (profileEditBtnContainer) {
+                    profileEditBtnContainer.classList.remove('admin-only');
+                    profileEditBtnContainer.style.display = 'block';
+                }
             } else {
                 if (registerBtn) {
                     registerBtn.classList.add('admin-only');
@@ -392,6 +520,10 @@
                 if (adminActionButtons) {
                     adminActionButtons.classList.add('admin-only');
                     adminActionButtons.style.display = 'none';
+                }
+                if (profileEditBtnContainer) {
+                    profileEditBtnContainer.classList.add('admin-only');
+                    profileEditBtnContainer.style.display = 'none';
                 }
             }
         }
@@ -706,10 +838,12 @@
                 closeDetailModal();
                 closeRegisterModal();
                 closeContactModal();
+                closeProfileModal();
             }
         });
 
         window.addEventListener('DOMContentLoaded', () => {
+            renderProfile();
             renderProjects();
             updateAdminUI();
         });
